@@ -1,3 +1,4 @@
+```
 1)
 class Pet(object):
     def __init__(self, name, owner):
@@ -33,3 +34,4 @@ AttributeError: 'Foo' object has no attribute 'baz'
 3
 9
 16
+```
