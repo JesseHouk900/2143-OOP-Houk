@@ -1,4 +1,4 @@
-
+```
 Jesse Houk
 1) []
 ['blue', 'red', 'green', 'red']
@@ -23,3 +23,4 @@ blue
 		while self.skittles:
 			L.append(self.skittles.pop())
 		return L
+```
