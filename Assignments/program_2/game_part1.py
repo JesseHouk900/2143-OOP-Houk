@@ -51,7 +51,7 @@ class Pig(object):
 ##############################################################################
 
 class Player(object):
-    def __init__(self,name,num_dice=1,strategy=('Random',7)):
+    def __init__(self,name,num_dice=1,strategy=('Random',7), target_score=100):
         self.Name = name        # My name
         self.TotalScore = 0     # Total score
         self.LastScore = 0      # Score on last turn
@@ -69,7 +69,7 @@ class Player(object):
                 'Random':0
             }
         self.Strategies[strategy[0]] = strategy[1]
-
+        self.TargetScore = target_score
     """
     @Method: AddOpponents
     @Description: Adds an opponent, or list of opponents (as long as it's not me) to a dictionary with name and score.
@@ -82,12 +82,12 @@ class Player(object):
     @Returns: None
     """
     def AddOpponents(self,opponent):
-        if not type(opponent) == list and not opponent.Name == self.Name:
-            self.Opponents[opponent.Name] = opponent
-        else:
-            for op in opponent:
-                if not op.Name == self.Name:
-                    self.Opponents[op.Name] = op
+        # if not type(opponent) == list and not opponent.Name == self.Name:
+        #     self.Opponents[opponent.Name] = opponent
+        # else:
+        for op in opponent:
+            if not op.Name == self.Name:
+                self.Opponents[op.Name] = op
 
     """
     @Method: __str__
@@ -156,33 +156,29 @@ class Player(object):
     def RandomRoll(self):
         Score = 0
         NumRolls = 0
-        for i in range(random.randint(1,7)):
-            NumRolls += 1
-            roll = self.pig.Roll()
-            if roll == 0:
-                break
-            Score += roll
+        for i in range(random.randint(1,self.Strategies['Random'])):
+            if ((self.TotalScore + Score) < self.TargetScore):
+                NumRolls += 1
+                roll = self.pig.Roll()
+                if roll == 0:
+                    break
+                Score += roll
         
         return (Score,NumRolls)
 
             
-    def Target_Score(self):
+    def Aggressive(self):
         pass
         
-    def Target_Roll(self):
+    def Cautious(self):
         pass
 
-    def Sprint_To_Finish(self):
+    def Robust(self):
         pass
         
-    def Mimic_Opponent(self):
+    def CopyCat(self):
         pass
 
-    def Situational(self):
-        pass
-        
-    def Combination(self):
-        pass
 
 
 ##############################################################################
@@ -250,10 +246,12 @@ class Game(object):
         
         # Main game loop
         while not self.WinnerExists():
+        	
             print(self)
             for name,PlayerObj in self.Players.items():
                 PlayerObj.Roll()
-       
+                if self.WinnerExists():
+                    break
     """
     @Method: WinnerExists
     @Description: Checks to see if a player has acheived the target score.
@@ -264,9 +262,8 @@ class Game(object):
         for name,PlayerObj in self.Players.items():
             if PlayerObj.TotalScore >= self.TargetScore:
                 self.WinnerName = PlayerObj.Name
-                return True
-        self.WinnerName = None
-        return False
+                return True, print("%s has reached %d points and is stopping."% (self.WinnerName, self.TargetScore))
+                return False
 
     """
     @Method: Winner
